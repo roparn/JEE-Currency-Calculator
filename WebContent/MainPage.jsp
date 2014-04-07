@@ -11,12 +11,8 @@
 <script src="jquery-2.1.0.min.js"></script>
 <script src="jquery.validate.min.js"></script>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="currencycalculator.mainpage.js"></script>
 <link rel="stylesheet" href="/resources/demos/style.css">
-<script>
-$(function() {
-	$("#datepicker").datepicker({ dateFormat: "dd.mm.yy" });
-});
-</script>
 </head>
 <body>
 
@@ -56,25 +52,14 @@ $(function() {
 </form>
 
 <p>
-<c:out value="${param.amount} ${param.inCurrency} = ${outPutSum} ${param.outCurrency}"></c:out>
+<c:if test="${param.amount > 0}">
+Eesti pank: <c:out value="${param.amount} ${param.inCurrency} = ${outPutSum} ${param.outCurrency}"></c:out>
+</c:if>
+<br />
+<c:if test="${param.amount > 0}">
+Leedu pank: <c:out value="${param.amount} ${param.inCurrency} = ${outPutSum2} ${param.outCurrency}"></c:out>
+</c:if>
 </p>
-
-<script type="text/javascript" >
-$(document).ready(function() {
-	var form = $('#mainform');
-	form.validate({
-		rules: {
-			amount: {
-	            required: true,
-	            number: true
-	        },
-	    }
-	});
-    $('#validate').click(function () {
-        form.valid();
-    });
-});
-</script>
 
 </body>
 </html> 
