@@ -1,5 +1,7 @@
 package ee.roparn.currencycalculator.dao;
 
+import ee.roparn.currencycalculator.model.CurrencyModel;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;

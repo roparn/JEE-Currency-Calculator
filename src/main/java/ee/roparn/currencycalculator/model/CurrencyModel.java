@@ -1,4 +1,4 @@
-package ee.roparn.currencycalculator.dao;
+package ee.roparn.currencycalculator.model;
 
 public class CurrencyModel {
 	private String name;

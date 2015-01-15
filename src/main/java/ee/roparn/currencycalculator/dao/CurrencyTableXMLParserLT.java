@@ -1,5 +1,7 @@
 package ee.roparn.currencycalculator.dao;
 
+import ee.roparn.currencycalculator.model.CurrencyModel;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;

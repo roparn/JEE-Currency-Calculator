@@ -1,5 +1,7 @@
 package ee.roparn.currencycalculator.dao;
 
+import ee.roparn.currencycalculator.model.CurrencyModel;
+
 import java.util.List;
 
 public interface ICurrencyTableXMLParser {

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import ee.roparn.currencycalculator.dao.CurrencyTableXMLParserLT;
 import ee.roparn.currencycalculator.dao.ICurrencyTableXMLParser;
-import ee.roparn.currencycalculator.dao.CurrencyModel;
+import ee.roparn.currencycalculator.model.CurrencyModel;
 import ee.roparn.currencycalculator.dao.CurrencyTableXMLParserEE;
 
 /**
