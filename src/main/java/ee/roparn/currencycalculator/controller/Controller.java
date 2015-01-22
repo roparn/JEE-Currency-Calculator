@@ -1,6 +1,7 @@
 package ee.roparn.currencycalculator.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,33 +9,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ee.roparn.currencycalculator.dao.CurrencyTableXMLParserLT;
-import ee.roparn.currencycalculator.dao.ICurrencyTableXMLParser;
+import ee.roparn.currencycalculator.dao.CurrencyXMLDAO;
+import ee.roparn.currencycalculator.dao.EECurrencyXMLDAO;
 import ee.roparn.currencycalculator.model.CurrencyModel;
-import ee.roparn.currencycalculator.dao.CurrencyTableXMLParserEE;
 
-/**
- * Servlet implementation class Controller
- */
 @WebServlet("/Controller")
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static String MAINPAGE_JSP = "/MainPage.jsp";
-	private ICurrencyTableXMLParser ctp;
-	private List<CurrencyModel> currencyList;
-	private List<CurrencyModel> currencyList2;
+	private CurrencyXMLDAO currencyXMLDAO;
+	private List<CurrencyModel> currencyList = new ArrayList<>();
 
-	public Controller() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 	public void init() throws ServletException {
-
-		ctp = new CurrencyTableXMLParserEE();
 		try {
-			currencyList = ctp.parseXMLToDAO();
-			ctp = new CurrencyTableXMLParserLT();
-			currencyList2 = ctp.parseXMLToDAO();
+			currencyXMLDAO = new EECurrencyXMLDAO();
+			currencyList = currencyXMLDAO.saveAndParseCurrenciesXML();
 		} catch (Exception e) {
 			getServletContext().log("An exception occurred", e);
 			throw new ServletException("An exception occurred" + e.getMessage());
@@ -62,14 +51,6 @@ public class Controller extends HttpServlet {
 			request.setAttribute("outPutSum", outPutAmount);
 		    // LT currency list
 		    CurrencyModel cmlt1 = null,cmlt2 = null;
-		    for (CurrencyModel item : currencyList2){
-		    	if (item.getName().equals(inCurrency))
-		    		cmlt1 = item;
-		    	if (item.getName().equals(outCurrency))
-		    		cmlt2 = item;
-		    	if (cmlt1 != null && cmlt2 != null)
-		    		break;
-		    }
 		    outPutAmount = amount * cmlt1.convertCurrency(cmlt2);
 		    outPutAmount = Math.round(outPutAmount*100.00)/100.00;
 			request.setAttribute("outPutSum2", outPutAmount);
