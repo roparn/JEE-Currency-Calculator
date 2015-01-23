@@ -22,7 +22,7 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
   public List<CurrencyModel> saveAndParseCurrenciesXML(){
     List<CurrencyModel> currencies = null;
     try {
-      createFileFromURL("https://www.eestipank.ee/valuutakursid/export/xml/latest");
+      createFileFromURL("http://www.eestipank.ee/valuutakursid/export/xml/latest");
       currencies = getCurrenciesFromSavedXML();
     } catch (Exception e){
       e.printStackTrace();

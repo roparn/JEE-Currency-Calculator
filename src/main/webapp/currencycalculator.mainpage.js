@@ -5,7 +5,7 @@ $(document).ready(function() {
 			amount: {
 	            required: true,
 	            number: true
-	        },
+	        }
 	    }
 	});
     $('#validate').click(function () {

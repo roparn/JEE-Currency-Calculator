@@ -28,14 +28,9 @@ public abstract class CurrencyXMLDAO {
   public abstract List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException;
 
   private void openURLStreamAndWriteToFile(URL url) throws IOException {
-    Scanner scanner = new Scanner(url.openStream());
-    PrintWriter printWriter = new PrintWriter(XMLFILE);
 
-    try {
+    try (Scanner scanner = new Scanner(url.openStream()); PrintWriter printWriter = new PrintWriter(XMLFILE)) {
       writeFromStream(scanner, printWriter);
-    } finally {
-      scanner.close();
-      printWriter.close();
     }
   }
 
