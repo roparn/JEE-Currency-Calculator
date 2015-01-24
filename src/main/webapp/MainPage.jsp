@@ -12,7 +12,6 @@
     <script src="jquery.validate.min.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="currencycalculator.mainpage.js"></script>
-    <link rel="stylesheet" href="/resources/demos/style.css">
 </head>
 <body>
 
@@ -24,7 +23,7 @@
         <tr>
             <td>Lähtevaluuta
                 <select name="inCurrency" class="required">
-                    <option></option>
+                    <option>EUR</option>
                     <c:forEach items="${currenciesList}" var="item">
                         <option>${item.name}</option>
                     </c:forEach>
@@ -34,7 +33,7 @@
         <tr>
             <td>Sihtvaluuta:
                 <select name="outCurrency" class="required">
-                    <option></option>
+                    <option>EUR</option>
                     <c:forEach items="${currenciesList}" var="item">
                         <option>${item.name}</option>
                     </c:forEach>
@@ -46,9 +45,13 @@
         </tr>
     </table>
 
-    <p><input id="validate" type="submit" name="send" value="Arvuta"/>&nbsp;
-        <input type="reset" value="Lähtesta"/></p>
+    <p>
+        <input id="validate" type="submit" name="send" value="Arvuta"/>&nbsp;
+        <input type="reset" value="Lähtesta"/>
+    </p>
 </form>
+
+<p id="results"></p>
 
 </body>
 </html> 
