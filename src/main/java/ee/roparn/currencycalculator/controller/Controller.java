@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import static ee.roparn.currencycalculator.util.Common.calculate;
 import static ee.roparn.currencycalculator.util.Common.findCurrencyFromListByText;
 
-@WebServlet("/Controller")
 public class Controller extends HttpServlet {
   private static final long serialVersionUID = 1L;
   private static String MAINPAGE_JSP = "/MainPage.jsp";
@@ -49,9 +48,8 @@ public class Controller extends HttpServlet {
       String outCurrency = request.getParameter("outCurrency");
 
       double result = findCurrenciesAndCalculate(inCurrency, outCurrency, amount);
-      JSONObject jsonObject = createResponseJSON(amount, inCurrency, outCurrency, result);
 
-      sendJSONPostResponse(response, jsonObject);
+      sendJSONPostResponse(response, createResponseJSON(amount, inCurrency, outCurrency, result));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -61,8 +59,9 @@ public class Controller extends HttpServlet {
   private void sendJSONPostResponse(HttpServletResponse response, JSONObject jsonObject) throws IOException {
     response.setContentType("application/json");
     response.setStatus(200);
-    response.getWriter().print(jsonObject);
-    response.getWriter().flush();
+    PrintWriter writer = response.getWriter();
+    writer.print(jsonObject.toString());
+    writer.flush();
   }
 
   private JSONObject createResponseJSON(double amount, String inCurrency, String outCurrency, double result) {

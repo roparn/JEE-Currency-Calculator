@@ -8,17 +8,27 @@ $(document).ready(function() {
 	        }
 	    }
 	});
-    $('#validate').click(function () {
-        form.valid();
-    });
-	$('#validate').submit(function () {
+	$("#mainform").submit(function(e){
+		e.preventDefault();
+	});
+	$('#validate').click(function () {
+		if (!form.valid()) {
+			console.log("Form is invalid!");
+			return false;
+		}
 		$.ajax({
 			type: "POST",
 			url: "Controller",
-			data: $('#mainform').serialize(),
+			data: form.serialize(),
+			dataType: "json",
+			mimeType: 'application/json',
+
 			success: function (data) {
-				console.log("data");
-				$('#results').text(data.toString());
+				console.log(data);
+				$('#results').text("Result: " + data.amount + " " + data.inCurrency + " = " + data.result + " "+ data.outCurrency);
+			},
+			error: function (data) {
+				console.log("Error");
 			}
 		});
 		return false;
