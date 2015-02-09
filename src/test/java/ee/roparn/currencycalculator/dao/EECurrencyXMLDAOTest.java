@@ -22,7 +22,7 @@ public class EECurrencyXMLDAOTest {
   }
 
   @Test
-  public void createFileFromURL() {
+  public void createFileFromURL() throws IOException {
     eeCurrencyXMLDAO.createFileFromURL("http://www.eestipank.ee/valuutakursid/export/xml/latest");
 
     assertTrue(new File("currencies.xml").exists());

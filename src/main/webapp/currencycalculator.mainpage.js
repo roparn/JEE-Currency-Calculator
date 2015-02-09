@@ -28,7 +28,8 @@ $(document).ready(function() {
 				$('#results').text("Result: " + data.amount + " " + data.inCurrency + " = " + data.result + " "+ data.outCurrency);
 			},
 			error: function (data) {
-				console.log("Error");
+				console.log(data);
+				$('#results').text("Problem occured: " + data.responseJSON.error);
 			}
 		});
 		return false;

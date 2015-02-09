@@ -14,16 +14,12 @@ public abstract class CurrencyXMLDAO {
 
   protected static final File XMLFILE = new File("currencies.xml");
 
-  public void createFileFromURL(String urlString) {
-    try {
-      URL url = new URL(urlString);
-      openURLStreamAndWriteToFile(url);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  public void createFileFromURL(String urlString) throws IOException {
+    URL url = new URL(urlString);
+    openURLStreamAndWriteToFile(url);
   }
 
-  public abstract List<CurrencyModel> saveAndParseCurrenciesXML();
+  public abstract List<CurrencyModel> saveAndParseCurrenciesXML(String currenciesXML) throws Exception;
 
   public abstract List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException;
 

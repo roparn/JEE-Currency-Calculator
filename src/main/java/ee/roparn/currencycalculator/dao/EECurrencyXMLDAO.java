@@ -19,15 +19,14 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
   }
 
   @Override
-  public List<CurrencyModel> saveAndParseCurrenciesXML(){
-    List<CurrencyModel> currencies = null;
+  public List<CurrencyModel> saveAndParseCurrenciesXML(String currenciesXMLURL) throws Exception {
     try {
-      createFileFromURL("http://www.eestipank.ee/valuutakursid/export/xml/latest");
-      currencies = getCurrenciesFromSavedXML();
+      createFileFromURL(currenciesXMLURL);
+
+      return getCurrenciesFromSavedXML();
     } catch (Exception e){
-      e.printStackTrace();
+      throw new Exception("Error downloading currencies");
     }
-    return currencies;
   }
 
   @Override

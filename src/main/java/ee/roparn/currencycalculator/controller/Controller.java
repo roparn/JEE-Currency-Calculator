@@ -2,12 +2,12 @@ package ee.roparn.currencycalculator.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ public class Controller extends HttpServlet {
 
   public void init() throws ServletException {
     try {
-      currencyList = getCurrencies();
+      currencyList = getCurrencies("http://www.eestipank.ee/valuutakursid/export/xml/latest");
     } catch (Exception e) {
       getServletContext().log("An exception occurred", e);
       throw new ServletException("An exception occurred" + e.getMessage());
@@ -43,24 +43,40 @@ public class Controller extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
       double amount = Double.parseDouble(request.getParameter("amount"));
-      Date date = new SimpleDateFormat("DD.MM.YY").parse(request.getParameter("date"));
       String inCurrency = request.getParameter("inCurrency");
       String outCurrency = request.getParameter("outCurrency");
+      determineCurrenciesTableToDownload(request.getParameter("date"));
 
       double result = findCurrenciesAndCalculate(inCurrency, outCurrency, amount);
 
-      sendJSONPostResponse(response, createResponseJSON(amount, inCurrency, outCurrency, result));
+      sendPostResponse(response, createResponseJSON(amount, inCurrency, outCurrency, result).toString(), 200);
+
+    } catch (NumberFormatException e) {
+      sendErrorPostResponse(response, "Invalid amount input parameter");
+    } catch (NullPointerException e) {
+      sendErrorPostResponse(response, "Could not parse parameters");
     } catch (Exception e) {
       e.printStackTrace();
+      sendErrorPostResponse(response, e.getMessage());
     }
-
   }
 
-  private void sendJSONPostResponse(HttpServletResponse response, JSONObject jsonObject) throws IOException {
+  private void determineCurrenciesTableToDownload(String inputDateString) throws ParseException {
+    if (inputDateString == null || inputDateString.equals("")) {
+    } else {
+      Date date = new SimpleDateFormat("DD.MM.YY").parse(inputDateString);
+    }
+  }
+
+  private void sendErrorPostResponse(HttpServletResponse response, String errorMessage) throws IOException {
+    sendPostResponse(response, new JSONObject().put("error", errorMessage).toString(), 400);
+  }
+
+  private void sendPostResponse(HttpServletResponse response, String message, int statusCode) throws IOException {
     response.setContentType("application/json");
-    response.setStatus(200);
+    response.setStatus(statusCode);
     PrintWriter writer = response.getWriter();
-    writer.print(jsonObject.toString());
+    writer.print(message);
     writer.flush();
   }
 
@@ -82,8 +98,8 @@ public class Controller extends HttpServlet {
     return calculate(fromCurrency, toCurrency, amount);
   }
 
-  protected List<CurrencyModel> getCurrencies() {
-    List<CurrencyModel> currencies = new EECurrencyXMLDAO().saveAndParseCurrenciesXML();
+  protected List<CurrencyModel> getCurrencies(String currenciesXMLURL) throws Exception {
+    List<CurrencyModel> currencies = new EECurrencyXMLDAO().saveAndParseCurrenciesXML(currenciesXMLURL);
 
     CurrencyModel c = new CurrencyModel();
     c.setName("EUR");
