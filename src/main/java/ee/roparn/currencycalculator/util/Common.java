@@ -21,4 +21,8 @@ public class Common {
         return c;
     throw new IllegalArgumentException("Desired currency not found");
   }
+
+  public void requestCurrencyXMLFromEEBankWithGivenDate() {
+    String url = "http://www.eestipank.ee/valuutakursid/export/xml/latest?imported_at=03.02.2015";
+  }
 }

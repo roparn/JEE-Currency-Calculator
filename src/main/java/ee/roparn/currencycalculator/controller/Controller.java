@@ -64,7 +64,7 @@ public class Controller extends HttpServlet {
   private void determineCurrenciesTableToDownload(String inputDateString) throws ParseException {
     if (inputDateString == null || inputDateString.equals("")) {
     } else {
-      Date date = new SimpleDateFormat("DD.MM.YY").parse(inputDateString);
+      Date date = new SimpleDateFormat("dd.MM.YY").parse(inputDateString);
     }
   }
 
