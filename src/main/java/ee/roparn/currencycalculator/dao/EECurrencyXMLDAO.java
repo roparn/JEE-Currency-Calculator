@@ -2,21 +2,25 @@ package ee.roparn.currencycalculator.dao;
 
 import ee.roparn.currencycalculator.handler.CurrencyTableXMLHandlerEE;
 import ee.roparn.currencycalculator.model.CurrencyModel;
+import ee.roparn.currencycalculator.util.Configuration;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import static ee.roparn.currencycalculator.util.Configuration.*;
 
 public class EECurrencyXMLDAO extends CurrencyXMLDAO{
 
   private SAXParser saxParser;
   private final CurrencyTableXMLHandlerEE currencyTableXMLHandlerEE;
 
-  public EECurrencyXMLDAO() {
-    super();
+  public EECurrencyXMLDAO(Date date) {
+    super(date);
     SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
     saxParser = createSaxParser(saxParserFactory);
     currencyTableXMLHandlerEE = new CurrencyTableXMLHandlerEE();
@@ -34,17 +38,27 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
   }
 
   @Override
-  public List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException {
-    saxParser.parse(XML_FILE, currencyTableXMLHandlerEE);
+  public List<CurrencyModel> getSavedOrDownloadCurrencies() throws Exception {
+    if (xmlFile.exists()) {
+      return getCurrenciesFromSavedXML();
+    }
+    String currenciesXMLURL = String.format("%s?imported_at=%s", getConfiguration().getEstonianBankCurrenciesXMLURL(), new SimpleDateFormat("dd.MM.yyyy").format(super.requestedDate));
 
-    return currencyTableXMLHandlerEE.getCurrencies();
+    return saveAndParseCurrenciesXML(currenciesXMLURL);
   }
 
   @Override
   public Date getDateFromSavedXML() throws IOException, SAXException {
-    saxParser.parse(XML_FILE, currencyTableXMLHandlerEE);
+    saxParser.parse(xmlFile, currencyTableXMLHandlerEE);
 
     return currencyTableXMLHandlerEE.getCurrencyTableDate();
+  }
+
+  @Override
+  protected List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException {
+    saxParser.parse(xmlFile, currencyTableXMLHandlerEE);
+
+    return currencyTableXMLHandlerEE.getCurrencies();
   }
 
   private SAXParser createSaxParser(SAXParserFactory saxParserFactory) {

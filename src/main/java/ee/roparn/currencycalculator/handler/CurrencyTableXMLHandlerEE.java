@@ -21,6 +21,13 @@ public class CurrencyTableXMLHandlerEE extends DefaultHandler {
   private List<CurrencyModel> currencies = new ArrayList<>();
   private Date currencyTableDate;
 
+  public CurrencyTableXMLHandlerEE() {
+    CurrencyModel c = new CurrencyModel();
+    c.setName("EUR");
+    c.setRate(1.0);
+    currencies.add(c);
+  }
+
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
     if (qName.equalsIgnoreCase(CUBE)) {

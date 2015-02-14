@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 public class EECurrencyXMLDAOTest {
 
   private final String urlString = "http://www.eestipank.ee/valuutakursid/export/xml/latest";
-  private CurrencyXMLDAO eeCurrencyXMLDAO = new EECurrencyXMLDAO();
+  private CurrencyXMLDAO eeCurrencyXMLDAO = new EECurrencyXMLDAO(new Date());
 
   @Before
   public void setUp() throws Exception {
@@ -44,7 +44,7 @@ public class EECurrencyXMLDAOTest {
 
   @Test
   public void getCurrenciesFromSavedXML() throws IOException, SAXException, URISyntaxException {
-    eeCurrencyXMLDAO.XML_FILE = new File(getClass().getResource("/ee-example-currencytable.xml").toURI());
+    eeCurrencyXMLDAO.xmlFile = new File(getClass().getResource("/ee-example-currencytable.xml").toURI());
     List<CurrencyModel> currencies = eeCurrencyXMLDAO.getCurrenciesFromSavedXML();
     assertEquals(currencies.size(), 31);
   }
@@ -60,7 +60,7 @@ public class EECurrencyXMLDAOTest {
   @Test
   public void saveAndParseCurrenciesXML_badURL() throws Exception {
     try {
-      List<CurrencyModel> currencyModels = eeCurrencyXMLDAO.saveAndParseCurrenciesXML("URLISBAD");
+      eeCurrencyXMLDAO.saveAndParseCurrenciesXML("URLISBAD");
       fail("Exception not thrown!");
     } catch (Exception e) {
       assertEquals("Error downloading currencies", e.getMessage());
@@ -68,10 +68,10 @@ public class EECurrencyXMLDAOTest {
   }
 
   private void assertFileExistsAndDelete(String expectedFileName) {
-    assertTrue(new File(eeCurrencyXMLDAO.XML_FILE.getAbsolutePath()).exists());
-    assertEquals(expectedFileName, eeCurrencyXMLDAO.XML_FILE.getName());
+    assertTrue(new File(eeCurrencyXMLDAO.xmlFile.getAbsolutePath()).exists());
+    assertEquals(expectedFileName, eeCurrencyXMLDAO.xmlFile.getName());
 
-    eeCurrencyXMLDAO.XML_FILE.delete();
+    eeCurrencyXMLDAO.xmlFile.delete();
   }
 
 }

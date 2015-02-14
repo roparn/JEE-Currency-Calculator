@@ -14,14 +14,16 @@ import java.util.Scanner;
 
 public abstract class CurrencyXMLDAO {
 
-  protected File XML_FILE;
+  protected File xmlFile;
+  protected final Date requestedDate;
 
-  public CurrencyXMLDAO() {
-    XML_FILE = new File(getFileNameWithDateFormat(new Date()));
+  public CurrencyXMLDAO(Date date) {
+    requestedDate = date;
+    xmlFile = new File(getFileNameWithDateFormat(date));
   }
 
   public void createFileFromURLWithRequestedDate(String urlString, Date date) throws IOException {
-    XML_FILE = new File(getFileNameWithDateFormat(date));
+    xmlFile = new File(getFileNameWithDateFormat(date));
     createFileFromURL(String.format("%s?imported_at=%s", urlString, new SimpleDateFormat("dd.MM.yyyy").format(date)));
   }
 
@@ -31,13 +33,15 @@ public abstract class CurrencyXMLDAO {
 
   public abstract List<CurrencyModel> saveAndParseCurrenciesXML(String currenciesXML) throws Exception;
 
-  public abstract List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException;
+  protected abstract List<CurrencyModel> getCurrenciesFromSavedXML() throws IOException, SAXException;
 
   public abstract Date getDateFromSavedXML() throws IOException, SAXException;
 
+  public abstract List<CurrencyModel> getSavedOrDownloadCurrencies() throws Exception;
+
   private void openURLStreamAndWriteToFile(URL url) throws IOException {
 
-    try (Scanner scanner = new Scanner(url.openStream()); PrintWriter printWriter = new PrintWriter(XML_FILE)) {
+    try (Scanner scanner = new Scanner(url.openStream()); PrintWriter printWriter = new PrintWriter(xmlFile)) {
       writeFromStream(scanner, printWriter);
     }
   }

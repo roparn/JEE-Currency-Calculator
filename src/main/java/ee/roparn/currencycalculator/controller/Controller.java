@@ -13,20 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ee.roparn.currencycalculator.dao.EECurrencyXMLDAO;
+import ee.roparn.currencycalculator.handler.CurrencyCalculationHandler;
 import ee.roparn.currencycalculator.model.CurrencyModel;
+import ee.roparn.currencycalculator.util.Configuration;
 import org.json.JSONObject;
 
-import static ee.roparn.currencycalculator.util.Common.calculate;
-import static ee.roparn.currencycalculator.util.Common.findCurrencyFromListByText;
+import static ee.roparn.currencycalculator.util.Configuration.*;
 
 public class Controller extends HttpServlet {
   private static final long serialVersionUID = 1L;
-  private static String MAINPAGE_JSP = "/MainPage.jsp";
-  private List<CurrencyModel> currencyList = new ArrayList<>();
+  private List<CurrencyModel> initialCurrencyList = new ArrayList<>();
 
   public void init() throws ServletException {
     try {
-      currencyList = getCurrencies("http://www.eestipank.ee/valuutakursid/export/xml/latest");
+      Configuration.init();
+      initialCurrencyList = getCurrencies("http://www.eestipank.ee/valuutakursid/export/xml/latest");
     } catch (Exception e) {
       getServletContext().log("An exception occurred", e);
       throw new ServletException("An exception occurred" + e.getMessage());
@@ -35,21 +36,14 @@ public class Controller extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     response.setContentType("text/html");
-    request.setAttribute("currenciesList", currencyList);
+    request.setAttribute("currenciesList", initialCurrencyList);
     response.setStatus(200);
-    getServletContext().getRequestDispatcher(MAINPAGE_JSP).forward(request, response);
+    getServletContext().getRequestDispatcher(getConfiguration().getMainPageJSPFileName()).forward(request, response);
   }
 
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
-      double amount = Double.parseDouble(request.getParameter("amount"));
-      String inCurrency = request.getParameter("inCurrency");
-      String outCurrency = request.getParameter("outCurrency");
-      determineCurrenciesTableToDownload(request.getParameter("date"));
-
-      double result = findCurrenciesAndCalculate(inCurrency, outCurrency, amount);
-
-      sendPostResponse(response, createResponseJSON(amount, inCurrency, outCurrency, result).toString(), 200);
+      handlePostRequestAndSendResponse(request, response);
 
     } catch (NumberFormatException e) {
       sendErrorPostResponse(response, "Invalid amount input parameter");
@@ -61,10 +55,21 @@ public class Controller extends HttpServlet {
     }
   }
 
-  private void determineCurrenciesTableToDownload(String inputDateString) throws ParseException {
+  private void handlePostRequestAndSendResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    double amount = Double.parseDouble(request.getParameter("amount"));
+    String inCurrency = request.getParameter("inCurrency");
+    String outCurrency = request.getParameter("outCurrency");
+    Date date = parseStringInputToDate(request.getParameter("date"));
+
+    JSONObject responseJSON = new CurrencyCalculationHandler().calculateResultAndParseToJSON(inCurrency, outCurrency, date, amount);
+    sendPostResponse(response, responseJSON.toString(), 200);
+  }
+
+  private Date parseStringInputToDate(String inputDateString) throws ParseException {
     if (inputDateString == null || inputDateString.equals("")) {
+      return new Date();
     } else {
-      Date date = new SimpleDateFormat("dd.MM.YY").parse(inputDateString);
+      return new SimpleDateFormat("dd.MM.yyyy").parse(inputDateString);
     }
   }
 
@@ -80,31 +85,8 @@ public class Controller extends HttpServlet {
     writer.flush();
   }
 
-  private JSONObject createResponseJSON(double amount, String inCurrency, String outCurrency, double result) {
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.accumulate("inCurrency", inCurrency);
-    jsonObject.accumulate("outCurrency", outCurrency);
-    jsonObject.accumulate("amount", amount);
-    jsonObject.accumulate("result", result);
-
-    return jsonObject;
-  }
-
-  private double findCurrenciesAndCalculate(String inCurrency, String outCurrency, double amount) throws Exception {
-
-    CurrencyModel fromCurrency = findCurrencyFromListByText(inCurrency, currencyList);
-    CurrencyModel toCurrency = findCurrencyFromListByText(outCurrency, currencyList);
-
-    return calculate(fromCurrency, toCurrency, amount);
-  }
-
   protected List<CurrencyModel> getCurrencies(String currenciesXMLURL) throws Exception {
-    List<CurrencyModel> currencies = new EECurrencyXMLDAO().saveAndParseCurrenciesXML(currenciesXMLURL);
-
-    CurrencyModel c = new CurrencyModel();
-    c.setName("EUR");
-    c.setRate(1.0);
-    currencies.add(c);
+    List<CurrencyModel> currencies = new EECurrencyXMLDAO(new Date()).saveAndParseCurrenciesXML(currenciesXMLURL);
 
     return currencies;
   }
