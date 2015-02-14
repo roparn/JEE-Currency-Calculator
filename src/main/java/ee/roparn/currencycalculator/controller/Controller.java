@@ -27,7 +27,7 @@ public class Controller extends HttpServlet {
   public void init() throws ServletException {
     try {
       Configuration.init();
-      initialCurrencyList = getCurrencies("http://www.eestipank.ee/valuutakursid/export/xml/latest");
+      initialCurrencyList = getInitialCurrenciesList(getConfiguration().getEstonianBankCurrenciesXMLURL());
     } catch (Exception e) {
       getServletContext().log("An exception occurred", e);
       throw new ServletException("An exception occurred" + e.getMessage());
@@ -85,10 +85,9 @@ public class Controller extends HttpServlet {
     writer.flush();
   }
 
-  protected List<CurrencyModel> getCurrencies(String currenciesXMLURL) throws Exception {
-    List<CurrencyModel> currencies = new EECurrencyXMLDAO(new Date()).saveAndParseCurrenciesXML(currenciesXMLURL);
+  protected List<CurrencyModel> getInitialCurrenciesList(String currenciesXMLURL) throws Exception {
 
-    return currencies;
+    return new EECurrencyXMLDAO(new Date()).saveAndParseCurrenciesXML(currenciesXMLURL);
   }
 
 }

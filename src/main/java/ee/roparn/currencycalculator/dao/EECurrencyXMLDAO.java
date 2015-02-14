@@ -2,9 +2,9 @@ package ee.roparn.currencycalculator.dao;
 
 import ee.roparn.currencycalculator.handler.CurrencyTableXMLHandlerEE;
 import ee.roparn.currencycalculator.model.CurrencyModel;
-import ee.roparn.currencycalculator.util.Configuration;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
@@ -12,17 +12,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static ee.roparn.currencycalculator.util.Configuration.*;
+import static ee.roparn.currencycalculator.util.Configuration.getConfiguration;
 
-public class EECurrencyXMLDAO extends CurrencyXMLDAO{
+public class EECurrencyXMLDAO extends CurrencyXMLDAO {
 
   private SAXParser saxParser;
   private final CurrencyTableXMLHandlerEE currencyTableXMLHandlerEE;
 
-  public EECurrencyXMLDAO(Date date) {
+  public EECurrencyXMLDAO(Date date) throws ParserConfigurationException, SAXException {
     super(date);
-    SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-    saxParser = createSaxParser(saxParserFactory);
+
+    saxParser = SAXParserFactory.newInstance().newSAXParser();
+
     currencyTableXMLHandlerEE = new CurrencyTableXMLHandlerEE();
   }
 
@@ -32,7 +33,7 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
       createFileFromURL(currenciesXMLURL);
 
       return getCurrenciesFromSavedXML();
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new Exception("Error downloading currencies");
     }
   }
@@ -42,6 +43,7 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
     if (xmlFile.exists()) {
       return getCurrenciesFromSavedXML();
     }
+    // TODO: perhaps move the URL generation to util.Common or something
     String currenciesXMLURL = String.format("%s?imported_at=%s", getConfiguration().getEstonianBankCurrenciesXMLURL(), new SimpleDateFormat("dd.MM.yyyy").format(super.requestedDate));
 
     return saveAndParseCurrenciesXML(currenciesXMLURL);
@@ -59,15 +61,5 @@ public class EECurrencyXMLDAO extends CurrencyXMLDAO{
     saxParser.parse(xmlFile, currencyTableXMLHandlerEE);
 
     return currencyTableXMLHandlerEE.getCurrencies();
-  }
-
-  private SAXParser createSaxParser(SAXParserFactory saxParserFactory) {
-    SAXParser saxParser = null;
-    try {
-      saxParser = saxParserFactory.newSAXParser();
-    } catch (Exception e){
-      e.printStackTrace();
-    }
-    return saxParser;
   }
 }

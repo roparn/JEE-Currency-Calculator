@@ -35,7 +35,4 @@ public class CurrencyModel {
             + rate + "]";
   }
 
-  public double convertCurrency(CurrencyModel otherCurrency) {
-    return rate / otherCurrency.getRate();
-  }
 }

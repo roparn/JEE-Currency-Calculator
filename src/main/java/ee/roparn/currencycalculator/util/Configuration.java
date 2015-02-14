@@ -33,9 +33,4 @@ public class Configuration {
     return properties.getProperty("MAINPAGE");
   }
 
-  public static void main(String[] args) {
-    Configuration.init();
-    String estonianBankCurrenciesXMLURL = Configuration.getConfiguration().getEstonianBankCurrenciesXMLURL();
-    System.out.println();
-  }
 }
