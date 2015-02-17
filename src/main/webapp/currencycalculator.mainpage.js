@@ -24,13 +24,12 @@ $(document).ready(function() {
 			mimeType: 'application/json',
 
 			success: function (data) {
+				$('#results').text("Results:");
 				for (var i=0; i < data.length; i++) {
 					console.log(data[i]);
-					$('#results').text("Result: " + data[i].amount + " " + data[i].inCurrency + " = " + data[i].result + " "+ data[i].outCurrency);
-
+					$('#results').append("<br />" + data[i].source + ": " + data[i].amount + " " + data[i].inCurrency + " = " + data[i].result + " "+ data[i].outCurrency);
 				}
-				//console.log(data);
-				//$('#results').text("Result: " + data.amount + " " + data.inCurrency + " = " + data.result + " "+ data.outCurrency);
+				console.log(data);
 			},
 			error: function (data) {
 				console.log(data);
