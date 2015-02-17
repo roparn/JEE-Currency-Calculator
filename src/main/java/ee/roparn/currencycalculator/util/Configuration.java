@@ -28,6 +28,9 @@ public class Configuration {
   public String getEstonianBankCurrenciesXMLURL() {
     return properties.getProperty("EE_BANK_CURRENCIES_URL");
   }
+  public String getLithuanianBankCurrenciesXMLURL() {
+    return properties.getProperty("LT_BANK_CURRENCIES_URL");
+  }
 
   public String getMainPageJSPFileName() {
     return properties.getProperty("MAINPAGE");

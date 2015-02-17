@@ -16,6 +16,7 @@ import ee.roparn.currencycalculator.dao.EECurrencyXMLDAO;
 import ee.roparn.currencycalculator.handler.CurrencyCalculationHandler;
 import ee.roparn.currencycalculator.model.CurrencyModel;
 import ee.roparn.currencycalculator.util.Configuration;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static ee.roparn.currencycalculator.util.Configuration.*;
@@ -23,11 +24,12 @@ import static ee.roparn.currencycalculator.util.Configuration.*;
 public class Controller extends HttpServlet {
   private static final long serialVersionUID = 1L;
   private List<CurrencyModel> initialCurrencyList = new ArrayList<>();
+  private final CurrencyCalculationHandler currencyCalculationHandler = new CurrencyCalculationHandler();
 
   public void init() throws ServletException {
     try {
       Configuration.init();
-      initialCurrencyList = getInitialCurrenciesList(getConfiguration().getEstonianBankCurrenciesXMLURL());
+      initialCurrencyList = getInitialCurrenciesList();
     } catch (Exception e) {
       getServletContext().log("An exception occurred", e);
       throw new ServletException("An exception occurred" + e.getMessage());
@@ -49,7 +51,7 @@ public class Controller extends HttpServlet {
       sendErrorPostResponse(response, "Invalid amount input parameter");
     } catch (NullPointerException e) {
       sendErrorPostResponse(response, "Could not parse parameters");
-    } catch (Exception e) {
+    } catch (Throwable e) {
       e.printStackTrace();
       sendErrorPostResponse(response, e.getMessage());
     }
@@ -61,7 +63,7 @@ public class Controller extends HttpServlet {
     String outCurrency = request.getParameter("outCurrency");
     Date date = parseStringInputToDate(request.getParameter("date"));
 
-    JSONObject responseJSON = new CurrencyCalculationHandler().calculateResultAndParseToJSON(inCurrency, outCurrency, date, amount);
+    JSONArray responseJSON = currencyCalculationHandler.calculateResultFromAllSourcesAndParseToJSON(inCurrency, outCurrency, date, amount);
     sendPostResponse(response, responseJSON.toString(), 200);
   }
 
@@ -85,9 +87,8 @@ public class Controller extends HttpServlet {
     writer.flush();
   }
 
-  protected List<CurrencyModel> getInitialCurrenciesList(String currenciesXMLURL) throws Exception {
-
-    return new EECurrencyXMLDAO(new Date()).saveAndParseCurrenciesXML(currenciesXMLURL);
+  protected List<CurrencyModel> getInitialCurrenciesList() throws Exception {
+    return new EECurrencyXMLDAO(new Date()).getSavedOrDownloadCurrencies();
   }
 
 }

@@ -23,7 +23,6 @@
         <tr>
             <td>Lähtevaluuta
                 <select name="inCurrency" class="required">
-                    <option>EUR</option>
                     <c:forEach items="${currenciesList}" var="item">
                         <option>${item.name}</option>
                     </c:forEach>
@@ -33,7 +32,6 @@
         <tr>
             <td>Sihtvaluuta:
                 <select name="outCurrency" class="required">
-                    <option>EUR</option>
                     <c:forEach items="${currenciesList}" var="item">
                         <option>${item.name}</option>
                     </c:forEach>

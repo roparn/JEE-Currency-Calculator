@@ -20,10 +20,11 @@ import static org.junit.Assert.fail;
 public class EECurrencyXMLDAOTest {
 
   private final String urlString = "http://www.eestipank.ee/valuutakursid/export/xml/latest";
-  private CurrencyXMLDAO eeCurrencyXMLDAO = new EECurrencyXMLDAO(new Date());
+  private CurrencyXMLDAO eeCurrencyXMLDAO;
 
   @Before
   public void setUp() throws Exception {
+    eeCurrencyXMLDAO = new EECurrencyXMLDAO(new Date());
   }
 
   @Test
@@ -31,15 +32,6 @@ public class EECurrencyXMLDAOTest {
     eeCurrencyXMLDAO.createFileFromURL(urlString);
 
     assertFileExistsAndDelete(eeCurrencyXMLDAO.getFileNameWithDateFormat(new Date()));
-  }
-
-  @Test
-  public void createFileFromURLWithRequestedDate() throws ParseException, IOException, SAXException {
-    Date date = new SimpleDateFormat("dd.MM.yy").parse("12.12.14");
-    eeCurrencyXMLDAO.createFileFromURLWithRequestedDate(urlString, date);
-
-    assertEquals("12.12.14", new SimpleDateFormat("dd.MM.yy").format(eeCurrencyXMLDAO.getDateFromSavedXML()));
-    assertFileExistsAndDelete("currencies_12-12-14.xml");
   }
 
   @Test
