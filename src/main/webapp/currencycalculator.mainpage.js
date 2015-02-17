@@ -24,12 +24,10 @@ $(document).ready(function() {
 			mimeType: 'application/json',
 
 			success: function (data) {
-				$('#results').text("Results:");
-				for (var i=0; i < data.length; i++) {
-					console.log(data[i]);
-					$('#results').append("<br />" + data[i].source + ": " + data[i].amount + " " + data[i].inCurrency + " = " + data[i].result + " "+ data[i].outCurrency);
-				}
+					generateResult(data);
+					//$('#results').append("<br />" + data[i].source + ": " + data[i].amount + " " + data[i].inCurrency + " = " + data[i].result + " "+ data[i].outCurrency);
 				console.log(data);
+
 			},
 			error: function (data) {
 				console.log(data);
@@ -42,3 +40,13 @@ $(document).ready(function() {
 $(function() {
 	$("#datepicker").datepicker({ dateFormat: "dd.mm.yy" });
 });
+function generateResult (data) {
+	$('#results').text("Results:");
+	for (var i=0; i < data.length; i++) {
+		var outCurrency = typeof data[i].outCurrency == "undefined" ? "" : data[i].outCurrency
+		var amount = typeof data[i].amount == "undefined" ? "" : data[i].amount
+		var inCurrency = typeof data[i].inCurrency == "undefined" ? "" : data[i].inCurrency
+
+		$('#results').append("<br />" + data[i].source + ": " + amount + " " + inCurrency + " = " + data[i].result + " " + outCurrency);
+	}
+}

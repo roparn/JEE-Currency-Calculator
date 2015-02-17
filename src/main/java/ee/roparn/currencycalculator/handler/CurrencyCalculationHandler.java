@@ -19,9 +19,12 @@ public class CurrencyCalculationHandler {
 
   public JSONArray calculateResultFromAllSourcesAndParseToJSON(String inCurrency, String outCurrency, Date date, double amount) throws Exception {
     JSONArray jsonArray = new JSONArray();
-    for (String s : new String[]{EE_BANK, LT_BANK}) {
-      CurrencyXMLDAO dao = determineXMLDAOToUse(s, date);
-      jsonArray.put(calculateResultAndParseToJSON(inCurrency, outCurrency, date, amount, dao, s));
+    for (String source : new String[]{EE_BANK, LT_BANK}) {
+      try {
+        jsonArray.put(calculateResultAndParseToJSON(inCurrency, outCurrency, date, amount, determineXMLDAOToUse(source, date), source));
+      } catch (IllegalArgumentException e) {
+        jsonArray.put(new JSONObject().accumulate("source", source).accumulate("result", e.getMessage()));
+      }
     }
     return jsonArray;
   }

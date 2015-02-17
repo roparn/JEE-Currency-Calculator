@@ -5,7 +5,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -47,12 +46,12 @@ public class CurrencyTableXMLHandlerLT extends DefaultHandler {
     }
     if (quantityTagReached) {
       CurrencyModel currency = currencyStack.peek();
-      currency.setRate(Double.parseDouble(new String(ch, start, length)) / currency.getRate());
+      currency.setRate(Double.parseDouble(new String(ch, start, length)));
       quantityTagReached = false;
     }
     if (rateTagReached) {
       CurrencyModel currency = currencyStack.peek();
-      currency.setRate(currency.getRate() * Double.parseDouble(new String(ch, start, length)));
+      currency.setRate(currency.getRate() / Double.parseDouble(new String(ch, start, length)));
       rateTagReached = false;
     }
   }
