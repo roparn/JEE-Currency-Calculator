@@ -1,8 +1,2 @@
-This is my currency calculator demo project, written in Java and using JEE technologies and components such as Servlet, JSP, JSTL and other web technologies like CSS, Javascript (using jQuery framework) and AJAX (yet to be implemented). Using MVC and object-oriented programming.
-
-Note: solution is lacking some refinements, but is functional.
-TODO:
- * Implement maven build automation
- * Refine backend currency xml file parsing
- * Add functionality to load and parse custom (user supplied) xml currency files
- * Implement AJAX
+This is my currency calculator demo project, written in Java. It is basically a servlet, that downloads a currency XML from some external source and calculates a result. 
+To install, verify that you have installed maven and Java SDK 1.8. I would also highly recommend using Intellij IDEA against Eclipse, as that is my main IDE and I have verified it to work there. If you have loaded the project and verified that there are no maven or other errors, run it using the maven default build plugin for Tomcat. That should be all, if all goes well, you should see amazing default HTML input fields on http://localhost:8080/Controller URL.
